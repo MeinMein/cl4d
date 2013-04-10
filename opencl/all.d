@@ -8,20 +8,20 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.all;
+module cl4d.all;
 
 public import
-	opencl.c.opencl,
-	opencl.commandqueue,
-	opencl.context,
-	opencl.device,
-	opencl.error,
-	opencl.event,
-	opencl.host,
-	opencl.image,
-	opencl.buffer,
-	opencl.kernel,
-	opencl.memory,
-	opencl.platform,
-	opencl.program,
-	opencl.sampler;
+	derelict.opencl.cl,
+	cl4d.commandqueue,
+	cl4d.context,
+	cl4d.device,
+	cl4d.error,
+	cl4d.event,
+	cl4d.host,
+	cl4d.image,
+	cl4d.buffer,
+	cl4d.kernel,
+	cl4d.memory,
+	cl4d.platform,
+	cl4d.program,
+	cl4d.sampler;

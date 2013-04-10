@@ -1,14 +1,20 @@
 
 module vectorAdd;
 
-import opencl.all;
+import derelict.opencl.cl;
+import cl4d.all;
 
 import std.stdio;
+import common;
 
 void main(string[] args)
 {
 	try
 	{
+		DerelictCL.load();
+		DerelictCL.reload(CLVersion.CL12);
+		DerelictCL.loadEXT();
+
 		auto platforms = CLHost.getPlatforms();
 		if (platforms.length < 1)
 		{
@@ -33,7 +39,7 @@ void main(string[] args)
 		
 		// Create a command queue and use the first device
 		auto queue = CLCommandQueue(context, devices[0]);
-		auto program = context.createProgram( mixin(CL_PROGRAM_STRING_DEBUG_INFO) ~ q{
+		auto program = context.createProgram( CL_PROGRAM_STRING_DEBUG_INFO(__LINE__, __FILE__) ~ q{
 				__kernel void sum(	__global const int* a,
 									__global const int* b,
 									__global int* c)
@@ -45,7 +51,7 @@ void main(string[] args)
 		writeln(program.buildLog(devices[0]));
 		
 		auto kernel = CLKernel(program, "sum");
-		
+
 		// create input vectors
 		immutable VECTOR_SIZE = 100;
 		int[VECTOR_SIZE] va = void; foreach(int i,e; va) va[i] = i;
@@ -58,8 +64,8 @@ void main(string[] args)
 		auto bufferC = CLBuffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, vc.sizeof, vc.ptr);
 	
 		// Copy lists A and B to the memory buffers
-	//	queue.enqueueWriteBuffer(bufferA, CL_TRUE, 0, va.sizeof, va.ptr);
-	//	queue.enqueueWriteBuffer(bufferB, CL_TRUE, 0, vb.sizeof, vb.ptr);
+		queue.enqueueWriteBuffer(bufferA, CL_TRUE, 0, va.sizeof, va.ptr);
+		queue.enqueueWriteBuffer(bufferB, CL_TRUE, 0, vb.sizeof, vb.ptr);
 	
 		// Set arguments to kernel
 		kernel.setArgs(bufferA, bufferB, bufferC);

@@ -8,13 +8,13 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.memory;
+module cl4d.memory;
 
-import opencl.c.cl;
-import opencl.c.cl_gl;
-import opencl.context;
-import opencl.error;
-import opencl.wrapper;
+import derelict.opencl.cl;
+import derelict.opencl.cl_gl;
+import cl4d.context;
+import cl4d.error;
+import cl4d.wrapper;
 
 alias CLObjectCollection!CLMemory CLMemories;
 
@@ -26,7 +26,6 @@ package struct CLMemory
 	mixin(CLWrapper("cl_mem", "clGetMemObjectInfo"));
 
 public:
-	version(CL_VERSION_1_1)
 	/**
 	 *	registers a user callback function with a memory object
 	 *	Each call registers the specified user callback function on a callback stack associated with memobj.
@@ -36,8 +35,12 @@ public:
 	 *	This provides a mechanism to be notified when the memory referenced by host_ptr, specified when the memory object was created
 	 *	and used as the storage bits for the memory object, can be reused or freed
 	 */
+	alias extern(System) void function(cl_mem, void*) mem_notify_fn; // could be added to wrappertypes
 	void setDestructorCallback(mem_notify_fn fpNotify, void* userData = null)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL11)
+			throw new CLVersionException();
+
 		cl_errcode res = clSetMemObjectDestructorCallback(this.cptr, fpNotify, userData);
 		
 		mixin(exceptionHandling(
@@ -70,10 +73,12 @@ public:
 
 @property
 {
-	version(CL_VERSION_1_1)
 	//! ditto
 	void destructorCallback(mem_notify_fn fpNotify)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL11)
+			throw new CLVersionException();
+
 		setDestructorCallback(fpNotify);
 	}
 

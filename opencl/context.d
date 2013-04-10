@@ -8,14 +8,14 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.context;
+module cl4d.context;
 
-import opencl.c.cl;
-import opencl.device;
-import opencl.error;
-import opencl.platform;
-import opencl.program;
-import opencl.wrapper;
+import derelict.opencl.cl;
+import cl4d.device;
+import cl4d.error;
+import cl4d.platform;
+import cl4d.program;
+import cl4d.wrapper;
 
 /**
  * context class
@@ -86,7 +86,7 @@ public:
 	cl_image_format[] supportedImageFormats(cl_mem_flags flags, cl_mem_object_type type) const
 	{
 		cl_uint numFormats;
-		cl_errcode res = clGetSupportedImageFormats(this._object, flags, type, 0, null, &numFormats);
+		cl_errcode res = clGetSupportedImageFormats(cast(void*)this._object, flags, type, 0, null, &numFormats);
 
 		mixin(exceptionHandling(
 			["CL_INVALID_CONTEXT",		""]
@@ -97,7 +97,7 @@ public:
 
 		auto formats = new cl_image_format[numFormats];
 
-		res = clGetSupportedImageFormats(this._object, flags, type, numFormats, formats.ptr, null);
+		res = clGetSupportedImageFormats(cast(void*)this._object, flags, type, numFormats, formats.ptr, null);
 
 		mixin(exceptionHandling(
 			["CL_INVALID_VALUE",		""],

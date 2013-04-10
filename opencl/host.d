@@ -8,11 +8,11 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.host;
+module cl4d.host;
 
-import opencl.c.cl;
-import opencl.error;
-import opencl.platform;
+import derelict.opencl.cl;
+import cl4d.error;
+import cl4d.platform;
 
 ///
 struct CLHost
@@ -41,7 +41,6 @@ struct CLHost
 		return CLPlatforms(platformIDs);
 	}
 
-	version(CL_VERSION_1_2) {} else
 	/**
 	 * allows the implementation to release the resources allocated by the OpenCL compiler.  This is a
 	 * hint from the application and does not guarantee that the compiler will not be used in the future
@@ -50,6 +49,9 @@ struct CLHost
 	 */
 	static void unloadCompiler()
 	{
+		if(DerelictCL.loadedVersion >= CLVersion.CL12)
+			throw new CLVersionException();
+
 		cl_errcode res = void;
 		res = clUnloadCompiler();
 		if(res != CL_SUCCESS)

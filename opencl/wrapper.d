@@ -8,15 +8,15 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.wrapper;
+module cl4d.wrapper;
 
-import opencl.error;
-import opencl.c.cl;
-import opencl.kernel;
-import opencl.memory;
-import opencl.platform;
-import opencl.device;
-import opencl.event;
+import cl4d.error;
+import derelict.opencl.cl;
+import cl4d.kernel;
+import cl4d.memory;
+import cl4d.platform;
+import cl4d.device;
+import cl4d.event;
 
 import std.array;
 
@@ -37,9 +37,14 @@ package
  *
  *	It should be a template mixin, but unfortunately those can't add constructors to classes
  */ 
-package string CLWrapper(string T, string classInfoFunction)
+public string CLWrapper(string T, string classInfoFunction)
 {
-	return "private:\nalias " ~ T ~ " T;\n" ~ q{
+	//return "private:alias " ~ T ~ " T;\n" ~ q{
+	return
+"private:\n" ~
+	"const string Tname = \"" ~ T ~ "\";\n" ~
+	"alias " ~ T ~ " T;\n" ~ q{
+
 	package T _object = null;
 	//public alias _object this; // TODO any merit?
 	package alias T CType; // remember the C type
@@ -50,7 +55,7 @@ public:
 	this(T obj)
 	{
 		_object = obj;
-		debug writef("wrapped %s %X\n", T.stringof, cast(void*) _object);
+		debug writef("wrapped %s %X\n", Tname, cast(void*) _object);
 	}
 
 debug private import std.stdio;
@@ -60,7 +65,7 @@ debug private import std.stdio;
 	{
 		// increment reference count
 		retain();
-		debug writef("copied %s %X. Reference count is now: %d\n", T.stringof, cast(void*) _object, referenceCount);
+		debug writef("copied %s %X. Reference count is now: %d\n", Tname, cast(void*) _object, referenceCount);
 	}
 
 	//! release the object
@@ -69,14 +74,15 @@ debug private import std.stdio;
 		if (_object is null)
 			return;
 
-		debug writef("releasing %s %X. Reference count before: %d\n", T.stringof, cast(void*) _object, referenceCount);
+		debug writef("releasing %s %X. Reference count before: %d\n", Tname, cast(void*) _object, referenceCount);
 		release();
 	}
 
 	//! ensure that _object isn't null
 	invariant()
 	{
-		assert(_object !is null, "invariant violated: _object is null");
+		// Workaround: cl_mem is nulled by release() in destructor, and invariant() is called at end of destructor
+		assert(_object !is null || Tname == "cl_mem", Tname ~ " invariant violated: _object is null");
 	}
 
 package:
@@ -84,23 +90,24 @@ package:
 	// should only be used inside here so reference counting works
 	final @property T cptr() const
 	{
-		return _object;
+		return cast(void*)_object;
 	}
 
 	//! increments the object reference count
 	void retain()
 	{
-		// HACK: really need a proper system for OpenCL version handling
-		version(CL_VERSION_1_2)
-			static if (T.stringof == "cl_device_id")
+		if(DerelictCL.loadedVersion >= CLVersion.CL12)
+		{
+			static if (Tname == "cl_device_id")
 				clRetainDevice(_object);
+		}
 
 		// NOTE: cl_platform_id and cl_device_id aren't reference counted
-		// T.stringof is compared instead of T itself so it also works with T being an alias
+		// Tname is compared instead of T itself so it also works with T being an alias
 		// platform and device will have an empty retain() so it can be safely used in this()
-		static if (T.stringof[$-3..$] != "_id")
+		static if (Tname[$-3..$] != "_id")
 		{
-			mixin("cl_errcode res = clRetain" ~ toCamelCase(T.stringof[2..$]) ~ (T.stringof == "cl_mem" ? "Object" : "") ~ "(_object);");
+			mixin("cl_errcode res = clRetain" ~ toCamelCase(Tname[2..$]) ~ (Tname == "cl_mem" ? "Object" : "") ~ "(_object);");
 			mixin(exceptionHandling(
 				["CL_OUT_OF_RESOURCES",		""],
 				["CL_OUT_OF_HOST_MEMORY",	""]
@@ -112,16 +119,17 @@ package:
 	 *	decrements the context reference count
 	 *	The object is deleted once the number of instances that are retained to it become zero
 	 */
-	void release()
+	package void release()
 	{
-		// HACK: really need a proper system for OpenCL version handling
-		version(CL_VERSION_1_2)
-			static if (T.stringof == "cl_device_id")
-				clReleaseDevice(_object);
-
-		static if (T.stringof[$-3..$] != "_id")
+		if(DerelictCL.loadedVersion >= CLVersion.CL12)
 		{
-			mixin("cl_errcode res = clRelease" ~ toCamelCase(T.stringof[2..$]) ~ (T.stringof == "cl_mem" ? "Object" : "") ~ "(_object);");
+			static if (Tname == "cl_device_id")
+				clReleaseDevice(_object);
+		}
+
+		static if (Tname[$-3..$] != "_id")
+		{
+			mixin("cl_errcode res = clRelease" ~ toCamelCase(Tname[2..$]) ~ (Tname == "cl_mem" ? "Object" : "") ~ "(_object);");
 			mixin(exceptionHandling(
 				["CL_OUT_OF_RESOURCES",		""],
 				["CL_OUT_OF_HOST_MEMORY",	""]
@@ -137,10 +145,10 @@ package:
 	 */
 	public @property cl_uint referenceCount() const
 	{
-		static if (T.stringof[$-3..$] != "_id")
+		static if (Tname[$-3..$] != "_id")
 		{
 			// HACK: not even toUpper works in CTFE anymore as of 2.054 *sigh*
-			mixin("return getInfo!cl_uint(CL_" ~ (T.stringof == "cl_command_queue" ? "QUEUE" : (){char[] tmp = T.stringof[3..$].dup; toUpperInPlace(tmp); return tmp;}()) ~ "_REFERENCE_COUNT);");
+			mixin("return getInfo!cl_uint(CL_" ~ (Tname == "cl_command_queue" ? "QUEUE" : (){char[] tmp = Tname[3..$].dup; toUpperInPlace(tmp); return tmp;}()) ~ "_REFERENCE_COUNT);");
 		}
 		else
 			return 0;
@@ -164,8 +172,6 @@ protected:
 	// TODO: make infoname type-safe, not cl_uint (can vary for certain _object, see cl_mem)
 	final U getInfo(U, alias infoFunction = }~classInfoFunction~q{)(cl_uint infoname) const
 	{
-		// TODO: should be in invariant
-		assert(_object !is null, "_object is null");
 		cl_errcode res;
 		
 		debug
@@ -173,7 +179,7 @@ protected:
 			size_t needed;
 
 			// get amount of memory necessary
-			res = infoFunction(_object, infoname, 0, null, &needed);
+			res = infoFunction(cast(void*)_object, infoname, 0, null, &needed);
 	
 			// error checking
 			if (res != CL_SUCCESS)
@@ -185,7 +191,7 @@ protected:
 		U info;
 
 		// get actual data
-		res = infoFunction(_object, infoname, U.sizeof, &info, null);
+		res = infoFunction(cast(void*)_object, infoname, U.sizeof, &info, null);
 		
 		// error checking
 		if (res != CL_SUCCESS)
@@ -202,7 +208,6 @@ protected:
 	 */
 	U getInfo2(U, alias altFunction)( cl_device_id device, cl_uint infoname) const
 	{
-		assert(_object !is null);
 		cl_errcode res;
 		
 		debug
@@ -210,7 +215,7 @@ protected:
 			size_t needed;
 
 			// get amount of memory necessary
-			res = altFunction(_object, device, infoname, 0, null, &needed);
+			res = altFunction(cast(void*)_object, device, infoname, 0, null, &needed);
 	
 			// error checking
 			if (res != CL_SUCCESS)
@@ -222,7 +227,7 @@ protected:
 		U info;
 
 		// get actual data
-		res = altFunction(_object, device, infoname, U.sizeof, &info, null);
+		res = altFunction(cast(void*)_object, device, infoname, U.sizeof, &info, null);
 		
 		// error checking
 		if (res != CL_SUCCESS)
@@ -244,12 +249,11 @@ protected:
 	// used for all array return types
 	final U[] getArrayInfo(U, alias infoFunction = }~classInfoFunction~q{)(cl_uint infoname) const
 	{
-		assert(_object !is null);
 		size_t needed;
 		cl_errcode res;
 
 		// get amount of needed memory
-		res = infoFunction(_object, infoname, 0, null, &needed);
+		res = infoFunction(cast(void*)_object, infoname, 0, null, &needed);
 
 		// error checking
 		if (res != CL_SUCCESS)
@@ -262,7 +266,7 @@ protected:
 		auto buffer = new U[needed/U.sizeof];
 
 		// get actual data
-		res = infoFunction(_object, infoname, needed, cast(void*)buffer.ptr, null);
+		res = infoFunction(cast(void*)_object, infoname, needed, cast(void*)buffer.ptr, null);
 		
 		// error checking
 		if (res != CL_SUCCESS)
@@ -279,12 +283,11 @@ protected:
 	 */
 	U[] getArrayInfo2(U, alias altFunction)(cl_device_id device, cl_uint infoname) const
 	{
-		assert(_object !is null);
 		size_t needed;
 		cl_errcode res;
 
 		// get amount of needed memory
-		res = altFunction(_object, device, infoname, 0, null, &needed);
+		res = altFunction(cast(void*)_object, device, infoname, 0, null, &needed);
 
 		// error checking
 		if (res != CL_SUCCESS)
@@ -297,7 +300,7 @@ protected:
 		auto buffer = new U[needed/U.sizeof];
 
 		// get actual data
-		res = altFunction(_object, device, infoname, needed, cast(void*)buffer.ptr, null);
+		res = altFunction(cast(void*)_object, device, infoname, needed, cast(void*)buffer.ptr, null);
 		
 		// error checking
 		if (res != CL_SUCCESS)
@@ -371,39 +374,4 @@ package struct CLObjectCollection(T)
 	{
 		return cast(const(T.CType)*) _objects.ptr;
 	}
-}
-
-
-version(unittest)
-{
-	struct CLDummy
-	{
-		alias uint CType;
-		uint referenceCount = 1;
-
-		this(this) {retain();}
-		~this() {release();}
-		void retain() {++referenceCount;}
-		void release() {--referenceCount;}
-	}
-
-	alias CLObjectCollection!CLDummy CLDummies;
-}
-
-unittest
-{
-	import std.conv;
-	CLDummy a;
-	CLDummy b;
-	assert(a.referenceCount == 1);
-
-	CLDummies c = CLDummies(a, b);
-	foreach (d; c)
-		assert(d.referenceCount == 2);
-
-	CLDummy d = c[0];
-	assert(d.referenceCount == 3, to!string(d.referenceCount));
-
-	uint[5] s = [1,2,3,4,5];
-	CLDummies g = CLDummies(s);
 }

@@ -8,13 +8,23 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.event;
+module cl4d.event;
 
-import opencl.c.cl;
-import opencl.context;
-import opencl.error;
-import opencl.program;
-import opencl.wrapper;
+import derelict.opencl.cl;
+import derelict.opencl.constants;
+import cl4d.context;
+import cl4d.error;
+import cl4d.program;
+import cl4d.wrapper;
+
+// Used in this module as convenience shortcut
+enum cl_command_execution_status
+{
+	CL_COMPLETE = CL_COMPLETE,
+	CL_RUNNING = CL_RUNNING,
+	CL_SUBMITTED = CL_SUBMITTED,
+	CL_QUEUED = CL_QUEUED,
+}
 
 //! Event collection
 struct CLEvents
@@ -91,9 +101,13 @@ public:
 	 *		command_exec_callback_type = The command execution callback values for which a callback can be registered are: CL_COMPLETE
 	 *		pfn_notify = the function to be registered, will be called asynchronously
 	 */
-	version(CL_VERSION_1_1)
+
+	alias extern(System) void function(cl_event,  cl_int,  void*) evt_notify_fn; // could be added to wrappertypes
 	void setCallback(cl_command_execution_status command_exec_callback_type, evt_notify_fn pfn_notify, void* userData = null)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL11)
+			throw new CLVersionException();
+
 		cl_errcode res = clSetEventCallback(this._object, command_exec_callback_type, pfn_notify, userData);
 		
 		mixin(exceptionHandling(
@@ -209,7 +223,6 @@ public:
 	} // of @property
 }
 
-version(CL_VERSION_1_1)
 /**
  *	User event class
  *
@@ -239,6 +252,9 @@ struct CLUserEvent
 	//! creates a user event object
 	this(CLContext context)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL11)
+			throw new CLVersionException();
+
 		// call "base constructor"
 		cl_errcode res;
 		sup = CLEvent(clCreateUserEvent(context.cptr, &res));

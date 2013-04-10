@@ -8,9 +8,11 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.error;
+module cl4d.error;
 
-import opencl.c.cl;
+import derelict.opencl.cl;
+
+alias int cl_errcode;
 
 class CLException : Exception
 {
@@ -43,6 +45,9 @@ import std.conv;
 
 /// an unrecognized OpenCL exception
 class CLUnrecognizedException : CLException {this(cl_errcode errcode, string file = "", size_t line = 0) {super(errcode, "unrecognized OpenCL exception occured: " ~ to!string(errcode), file, line);}}
+
+/// a version OpenCL exception
+class CLVersionException : CLException {this(string file = "", size_t line = 0) {super(errcode, "Function is not available for loaded CLVersion " ~ to!string(DerelictCL.loadedVersion), file, line);}}
 
 /// platform exceptions base class
 class CLPlatformException : CLException {this(cl_errcode errcode, string msg = "", string file = "", size_t line = 0) {super(errcode, msg, file, line);}}

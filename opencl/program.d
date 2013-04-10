@@ -8,14 +8,14 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.program;
+module cl4d.program;
 
-import opencl.kernel;
-import opencl.c.cl;
-import opencl.wrapper;
-import opencl.device;
-import opencl.context;
-import opencl.error;
+import cl4d.kernel;
+import derelict.opencl.cl;
+import cl4d.wrapper;
+import cl4d.device;
+import cl4d.context;
+import cl4d.error;
 
 /**
  * An OpenCL program consists of a set of kernels that are identified as functions declared with
@@ -57,7 +57,6 @@ public:
 		
 	}//*/
 	
-	version(CL_VERSION_1_2)
 	/**
 	 * creates a program object for a context, and loads the information related to the built-in kernels into a program object
 	 *
@@ -67,6 +66,9 @@ public:
 	 */
 	this(CLContext context, CLDevices devices, string kernelNames)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL12)
+			throw new CLVersionException();
+
 		import std.string;
 		cl_errcode res;
 		this(clCreateProgramWithBuiltInKernels(context.cptr, cast(cl_uint) devices.length, devices.ptr, toStringz(kernelNames), &res));
@@ -75,7 +77,7 @@ public:
 			["CL_INVALID_CONTEXT",		""],
 			["CL_INVALID_VALUE",		"devices or kernelNames is invalid"],
 			["CL_INVALID_DEVICE",		"some devices in list are not associated with context"],
-			["CL_INVALID_DEVICE",		""],
+			["CL_OUT_OF_RESOURCES",		""],
 			["CL_OUT_OF_HOST_MEMORY",	""]
 		));
 	}

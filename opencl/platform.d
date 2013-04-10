@@ -8,12 +8,12 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.platform;
+module cl4d.platform;
 
-public import opencl.c.cl;
-import opencl.device;
-import opencl.error;
-import opencl.wrapper;
+public import derelict.opencl.cl;
+import cl4d.device;
+import cl4d.error;
+import cl4d.wrapper;
 
 //! Platform collection
 alias CLObjectCollection!CLPlatform CLPlatforms;
@@ -92,7 +92,6 @@ public:
 	/// returns a list of all accelerator devices
 	CLDevices accelDevices() {return getDevices(CL_DEVICE_TYPE_ACCELERATOR);}
 
-	version(CL_VERSION_1_2)
 	/**
 	 * allows the implementation to release the resources allocated by the OpenCL compiler for
 	 * platform. This is a hint from the application and does not guarantee that the compiler will not be
@@ -102,6 +101,9 @@ public:
 	 */
 	void unloadCompiler()
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL12)
+			throw new CLVersionException();
+
 		clUnloadPlatformCompiler(_object);
 	}
 }

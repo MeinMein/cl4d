@@ -8,14 +8,14 @@
  *	License:
  *		see LICENSE.txt
  */
-module opencl.buffer;
+module cl4d.buffer;
 
-import opencl.c.cl;
-import opencl.c.cl_gl;
-import opencl.context;
-import opencl.error;
-import opencl.memory;
-import opencl.wrapper;
+import derelict.opencl.cl;
+import derelict.opencl.cl_gl;
+import cl4d.context;
+import cl4d.error;
+import cl4d.memory;
+import cl4d.wrapper;
 
 /**
  *	buffer objects are generic memory objects for containing any type of data
@@ -57,7 +57,6 @@ struct CLBuffer
 		));
 	}
 
-	version(CL_VERSION_1_1)
 	/**
 	 *	create a new buffer object representing a specific region in this buffer
 	 *
@@ -69,6 +68,9 @@ struct CLBuffer
 	 */
 	CLBuffer createRegionSubBuffer(cl_mem_flags flags, size_t origin, size_t size)
 	{
+		if(DerelictCL.loadedVersion < CLVersion.CL11)
+			throw new CLVersionException();
+
 		cl_buffer_region reg = {origin, size};
 
 		cl_errcode res;
