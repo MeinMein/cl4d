@@ -62,7 +62,11 @@ struct NDRange
 }
 
 //! null for NDRange
-__gshared immutable NullRange = NDRange();
+__gshared immutable NDRange NullRange;
+static this()
+{
+	NullRange = NDRange();
+}
 
 //! collection of several devices
 alias CLObjectCollection!CLKernel CLKernels;
