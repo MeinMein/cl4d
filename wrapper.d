@@ -82,7 +82,8 @@ debug private import std.stdio;
 	invariant()
 	{
 		// Workaround: cl_mem is nulled by release() in destructor, and invariant() is called at end of destructor
-		assert(_object !is null || Tname == "cl_mem", Tname ~ " invariant violated: _object is null");
+		// FIXME: seems broken in multiple ways..
+		//assert(_object !is null || Tname == "cl_mem", Tname ~ " invariant violated: _object is null");
 	}
 
 package:
@@ -317,7 +318,8 @@ protected:
 	 */
 	final string getStringInfo(alias infoFunction = }~classInfoFunction~q{)(cl_uint infoname) const
 	{
-		return cast(string) getArrayInfo!(ichar, infoFunction)(infoname);
+		auto str = cast(string) getArrayInfo!(ichar, infoFunction)(infoname);
+		return tr(str, "\0", "", "d");
 	}
 
 }; // return q{...}
