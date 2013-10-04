@@ -75,7 +75,7 @@ debug private import std.stdio;
 			return;
 
 		debug writef("releasing %s %X. Reference count before: %d\n", Tname, cast(void*) _object, referenceCount);
-		release();
+		//release();//FIXME reference counting seems broken
 	}
 
 	//! ensure that _object isn't null
