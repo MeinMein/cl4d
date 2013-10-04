@@ -42,7 +42,7 @@ public string CLWrapper(string T, string classInfoFunction)
 	//return "private:alias " ~ T ~ " T;\n" ~ q{
 	return
 "private:\n" ~
-	"const string Tname = \"" ~ T ~ "\";\n" ~
+	"enum Tname = \"" ~ T ~ "\";\n" ~
 	"alias " ~ T ~ " T;\n" ~ q{
 
 	package T _object = null;
