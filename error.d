@@ -145,6 +145,14 @@ package string toCamelCase(string input)
 	return cast(string) s[0 .. j];
 }
 
+package string toUpperCase(string input)
+{
+	char[] s = input.dup;
+	toUpperInPlace(s);
+	
+	return cast(string) s;
+}
+
 version(NO_CL_EXCEPTIONS) {} else
 version(BASIC_CL_EXCEPTIONS) {} else
 {

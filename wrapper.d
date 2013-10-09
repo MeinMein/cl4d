@@ -55,7 +55,7 @@ public:
 	this(T obj)
 	{
 		_object = obj;
-		debug writef("wrapped %s %X\n", Tname, cast(void*) _object);
+		debug writef("wrapped %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount);
 	}
 
 debug private import std.stdio;
@@ -65,7 +65,6 @@ debug private import std.stdio;
 	{
 		// increment reference count
 		retain();
-		debug writef("copied %s %X. Reference count is now: %d\n", Tname, cast(void*) _object, referenceCount);
 	}
 
 	//! release the object
@@ -74,8 +73,7 @@ debug private import std.stdio;
 		if (_object is null)
 			return;
 
-		debug writef("releasing %s %X. Reference count before: %d\n", Tname, cast(void*) _object, referenceCount);
-		//release();//FIXME reference counting seems broken
+		release();
 	}
 
 	//! ensure that _object isn't null
@@ -97,9 +95,9 @@ package:
 	//! increments the object reference count
 	void retain()
 	{
-		if(DerelictCL.loadedVersion >= CLVersion.CL12)
+		static if (Tname == "cl_device_id")
 		{
-			static if (Tname == "cl_device_id")
+			if(DerelictCL.loadedVersion >= CLVersion.CL12)
 				clRetainDevice(_object);
 		}
 
@@ -113,6 +111,8 @@ package:
 				["CL_OUT_OF_RESOURCES",		""],
 				["CL_OUT_OF_HOST_MEMORY",	""]
 			));
+
+			debug writef("copied %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount);
 		}
 	}
 	
@@ -122,14 +122,16 @@ package:
 	 */
 	package void release()
 	{
-		if(DerelictCL.loadedVersion >= CLVersion.CL12)
+		static if (Tname == "cl_device_id")
 		{
-			static if (Tname == "cl_device_id")
+			if(DerelictCL.loadedVersion >= CLVersion.CL12)
 				clReleaseDevice(_object);
 		}
 
 		static if (Tname[$-3..$] != "_id")
 		{
+			debug writef("released %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount-1);
+
 			mixin("cl_errcode res = clRelease" ~ toCamelCase(Tname[2..$]) ~ (Tname == "cl_mem" ? "Object" : "") ~ "(_object);");
 			mixin(exceptionHandling(
 				["CL_OUT_OF_RESOURCES",		""],
@@ -343,8 +345,11 @@ package struct CLObjectCollection(T)
 	}
 	body
 	{
-		// they were already copy-constructed (due to variadic?!)
-		_objects = objects;
+		// From http://dlang.org/function.html Variadic Functions:
+		// An implementation may construct the object or array instance on the stack.
+		// Therefore, it is an error to refer to that instance after the variadic function has returned.
+		// So, .dup is needed.
+		_objects = objects.dup;
 	}
 
 	//! takes a list of OpenCL C objects returned by some OpenCL functions like GetPlatformIDs
