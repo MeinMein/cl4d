@@ -47,8 +47,15 @@ public:
 			["CL_INVALID_PROPERTY",		"context property name in properties is not a supported property name, the value specified for a supported property name is not valid, OR the same property name is specified more than once"],
 			["CL_INVALID_VALUE",		"devices array has length 0 or a null pointer"],
 			["CL_INVALID_DEVICE",		"devices contains an invalid device or are not associated with the specified platform"],
+			["CL_INVALID_OPERATION",	""],
 			["CL_DEVICE_NOT_AVAILABLE",	"a device is currently not available even though the device was returned by getDevices"],
-			["CL_OUT_OF_HOST_MEMORY",	""]
+			["CL_OUT_OF_RESOURCES",		""],
+			["CL_OUT_OF_HOST_MEMORY",	""],
+			["CL_INVALID_D3D10_DEVICE_KHR",				""],
+			["CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR",	""],
+			["CL_INVALID_DX9_MEDIA_ADAPTER_KHR",		""],
+			//["CL_INVALID_ADAPTER_KHR",					""],
+			["CL_INVALID_D3D11_DEVICE_KHR",				""]
 		));
 	}
 	
@@ -68,10 +75,18 @@ public:
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_PLATFORM",		"no platform could be selected"],
+			["CL_INVALID_PROPERTY",		"context property name in properties is not a supported property name, the value specified for a supported property name is not valid, OR the same property name is specified more than once"],
 			["CL_INVALID_VALUE",		"internal invalid value error"],
+			["CL_INVALID_DEVICE_TYPE",	""],
 			["CL_DEVICE_NOT_AVAILABLE",	"no devices currently available"],
 			["CL_DEVICE_NOT_FOUND",		"no devices were found"],
-			["CL_OUT_OF_HOST_MEMORY",	""]
+			["CL_OUT_OF_RESOURCES",		""],
+			["CL_OUT_OF_HOST_MEMORY",	""],
+			["CL_INVALID_D3D10_DEVICE_KHR",				""],
+			["CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR",	""],
+			["CL_INVALID_DX9_MEDIA_ADAPTER_KHR",		""],
+			//["CL_INVALID_ADAPTER_KHR",					""],
+			["CL_INVALID_D3D11_DEVICE_KHR",				""]
 		));
 	}
 	
@@ -100,6 +115,7 @@ public:
 		res = clGetSupportedImageFormats(cast(void*)this._object, flags, type, numFormats, formats.ptr, null);
 
 		mixin(exceptionHandling(
+			["CL_INVALID_CONTEXT",		""],
 			["CL_INVALID_VALUE",		""],
 			["CL_OUT_OF_RESOURCES",		""],
 			["CL_OUT_OF_HOST_MEMORY",	""]

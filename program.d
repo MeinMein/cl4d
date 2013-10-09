@@ -43,6 +43,7 @@ public:
 		mixin(exceptionHandling(
 			["CL_INVALID_CONTEXT",		""],
 			["CL_INVALID_VALUE",		"source code string pointer is invalid"],
+			["CL_OUT_OF_RESOURCES",		""],
 			["CL_OUT_OF_HOST_MEMORY",	""]
 		));
 	}
@@ -115,6 +116,8 @@ public:
 			["CL_INVALID_BUILD_OPTIONS","build options specified by options are invalid"],
 			["CL_INVALID_OPERATION",	"the build of a program executable for any of the devices listed in device_list by a previous call to clBuildProgram for program has not completed OR there already are kernel objects attached to the program"],
 			["CL_COMPILER_NOT_AVAILABLE","program is created with clCreateProgramWithSource and a compiler is not available i.e. CL_DEVICE_COMPILER_AVAILABLE specified in table 4.3 is set to CL_FALSE"],
+			["CL_BUILD_PROGRAM_FAILURE",""],
+			["CL_OUT_OF_RESOURCES",		""],
 			["CL_OUT_OF_HOST_MEMORY",	""]
 		));
 
@@ -160,7 +163,7 @@ public:
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_PROGRAM",				"program is not a valid program object"],
-			["CL_INVALID_PROGRAM_EXECUTABLE",	"there is no successfully built executable for any device in program"]
+			["CL_INVALID_PROGRAM_EXECUTABLE",	"there is no successfully built executable for any device in program"]		
 		));
 		
 		auto kernels = new cl_kernel[numKernels];

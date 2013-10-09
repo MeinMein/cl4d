@@ -132,6 +132,7 @@ public:
 			["CL_INVALID_WORK_GROUP_SIZE",		"a work-group size is specified for kernel using the __attribute__((reqd_work_group_size(X, Y, Z))) qualifier in program source and is not (1, 1, 1)"],
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",	"a sub-buffer object is specified as the value for an argument that is a buffer object and the offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_INVALID_IMAGE_SIZE",			"an image object is specified as an argument value and the image dimensions (image width, height, specified or compute row and/or slice pitch) are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT","an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE","could not allocate memory for data store associated with image or buffer objects specified as arguments to kernel"],
 			["CL_INVALID_EVENT_WAIT_LIST",		"event objects in waitlist are not valid events"],
 			["CL_OUT_OF_RESOURCES",				"could not queue the execution instance of kernel on the command-queue because of insufficient resources needed to execute the kernel"],
@@ -235,6 +236,7 @@ public:
 			["CL_INVALID_WORK_ITEM_SIZE",	"the number of work-items specified in any of local[0], ... local[dims – 1] is greater than the corresponding values specified by CL_DEVICE_MAX_WORK_ITEM_SIZES[0], ..., CL_DEVICE_MAX_WORK_ITEM_SIZES[dims – 1]."],
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET","a sub-buffer object is specified as the value for an argument that is a buffer object and the offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue."],
 			["CL_INVALID_IMAGE_SIZE",		"an image object is specified as an argument value and the image dimensions (image width, height, specified or compute row and/or slice pitch) are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT","an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE", "could not allocate memory for data store associated with image or buffer objects specified as arguments to kernel"],
 			["CL_INVALID_EVENT_WAIT_LIST",	"objects in waitlist are not valid events"],
 			["CL_OUT_OF_RESOURCES",			"could not queue the execution instance of kernel on the command-queue because of insufficient resources needed to execute the kernel. For example, the explicitly specified local_work_size causes a failure to execute the kernel because of insufficient resources such as registers or local memory. Another example would be the number of read-only image args used in kernel exceed the CL_DEVICE_MAX_READ_IMAGE_ARGS value for device or the number of write-only image args used in kernel exceed the CL_DEVICE_MAX_WRITE_IMAGE_ARGS value for device or the number of samplers used in kernel exceed CL_DEVICE_MAX_SAMPLERS for device"],
@@ -282,6 +284,7 @@ public:
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",					"buffer is a sub-buffer object and offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST",	"the read operations are blocking and the execution status of any of the events in waitlist is a negative integer value"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",				"couldn't allocate memory for data store associated with buffer"],
+			["CL_INVALID_OPERATION",							""],
 			["CL_OUT_OF_RESOURCES",								""],
 			["CL_OUT_OF_HOST_MEMORY",							""]
 		));
@@ -321,6 +324,7 @@ public:
 			["CL_MAP_FAILURE",								"couldn't map the requested region into the host address space. This error cannot occur for buffer objects created with CL_MEM_USE_HOST_PTR or CL_MEM_ALLOC_HOST_PTR"],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST","the map operation is blocking and the execution status of any of the events in waitlist is a negative integer value"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",			"couldn't allocate memory for data store associated with buffer"],
+			["CL_INVALID_OPERATION",						""],
 			["CL_OUT_OF_RESOURCES",							""],
 			["CL_OUT_OF_HOST_MEMORY",						""]
 		));
@@ -365,6 +369,7 @@ public:
 			["CL_INVALID_VALUE",							"region being mapped given by (origin, origin+region) is out of bounds OR flags are invalid OR image is a 2D image object and origin[2] is not equal to 0 or region[2] is not equal to 1"],
 			["CL_INVALID_EVENT_WAIT_LIST",					"event objects in walitlist are invalid"],
 			["CL_INVALID_IMAGE_SIZE",						"image dimensions (image width, height, specified or compute row and/or slice pitch) for image are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT",			"an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MAP_FAILURE",								"couldn't map the requested region into the host address space. This error cannot occur for buffer objects created with CL_MEM_USE_HOST_PTR or CL_MEM_ALLOC_HOST_PTR"],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST","the map operation is blocking and the execution status of any of the events in waitlist is a negative integer value"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",			"couldn't allocate memory for data store associated with image"],
@@ -496,6 +501,9 @@ public:
 			["CL_INVALID_MEM_OBJECT",							"image is invalid"],
 			["CL_INVALID_VALUE",								"region being read/written specified by (offset, size) is out of bounds"],
 			["CL_INVALID_EVENT_WAIT_LIST",						"event objects in waitlist are not valid events"],
+			["CL_INVALID_IMAGE_SIZE",							"image dimensions (image width, height, specified or compute row and/or slice pitch) for an image are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT",				"an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
+			["CL_INVALID_OPERATION",							""],
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",					"buffer is a sub-buffer object and offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST",	"the read operations are blocking and the execution status of any of the events in waitlist is a negative integer value"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",				"couldn't allocate memory for data store associated with image"],
@@ -576,6 +584,7 @@ public:
 			["CL_INVALID_VALUE",					"region being read/written specified by (origin, origin+region) is out of bounds OR one of the images is a 2D image object and corresponding origin[2] != 0 or region[2] != 1"],
 			["CL_INVALID_EVENT_WAIT_LIST",			"event objects in waitlist are not valid events"],
 			["CL_INVALID_IMAGE_SIZE",				"image dimensions (image width, height, specified or compute row and/or slice pitch) for an image are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT",	"an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",	"couldn't allocate memory for data store associated with image"],
 			["CL_OUT_OF_RESOURCES",					""],
 			["CL_OUT_OF_HOST_MEMORY",				""],
@@ -611,6 +620,7 @@ public:
 			["CL_INVALID_EVENT_WAIT_LIST",			"event objects in waitlist are not valid events"],
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",		"dstBuffer is a sub-buffer object and offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_INVALID_IMAGE_SIZE",				"image dimensions (image width, height, specified or compute row and/or slice pitch) for srcImage are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT",	"an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",	"couldn't allocate memory for data store associated with srcImage or dstBuffer"],
 			["CL_INVALID_OPERATION",				"the device associated with command queue does not support images"],
 			["CL_OUT_OF_RESOURCES",					""],
@@ -644,6 +654,7 @@ public:
 			["CL_INVALID_EVENT_WAIT_LIST",			"event objects in waitlist are not valid events"],
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",		"srcBuffer is a sub-buffer object and offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_INVALID_IMAGE_SIZE",				"image dimensions (image width, height, specified or compute row and/or slice pitch) for dstImage are not supported by device associated with queue"],
+			//["CL_INVALID_IMAGE_FORMAT",	"an image object is specified as an argument value and the image format (image channel order and data type) is not supported by device associated with queue"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",	"couldn't allocate memory for data store associated with dstImage or srcBuffer"],
 			["CL_INVALID_OPERATION",				"the device associated with command queue does not support images"],
 			["CL_OUT_OF_RESOURCES",					""],
@@ -705,6 +716,7 @@ public:
 			["CL_MISALIGNED_SUB_BUFFER_OFFSET",					"buffer is a sub-buffer object and offset specified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue"],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST",	"the read operations are blocking and the execution status of any of the events in waitlist is a negative integer value"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",				"couldn't allocate memory for data store associated with buffer"],
+			["CL_INVALID_OPERATION",							""],
 			["CL_OUT_OF_RESOURCES",								""],
 			["CL_OUT_OF_HOST_MEMORY",							""]
 		));
@@ -791,6 +803,7 @@ public:
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_COMMAND_QUEUE",	""],
+			["CL_INVALID_VALUE",			""],
 			["CL_OUT_OF_RESOURCES",			""],
 			["CL_OUT_OF_HOST_MEMORY",		""]
 		));

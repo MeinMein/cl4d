@@ -49,6 +49,7 @@ struct CLBuffer
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_CONTEXT",				""],
+			["CL_INVALID_VALUE",				""],
 			["CL_INVALID_BUFFER_SIZE",			"hostbuf is empty"],
 			["CL_INVALID_HOST_PTR",				"hostbuf is null and CL_MEM_USE_HOST_PTR or CL_MEM_COPY_HOST_PTR are set in flags or hostbuf !is null but CL_MEM_COPY_HOST_PTR or CL_MEM_USE_HOST_PTR are not set in flags"],
 			["CL_MEM_OBJECT_ALLOCATION_FAILURE",""],

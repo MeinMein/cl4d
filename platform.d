@@ -66,7 +66,10 @@ public:
 		mixin(exceptionHandling(
 			["CL_INVALID_PLATFORM",		""],
 			["CL_INVALID_DEVICE_TYPE",	"There's no such device type"],
-			["CL_DEVICE_NOT_FOUND",		"Couldn't find an OpenCL device matching the given type"]
+			["CL_INVALID_VALUE",		""],
+			["CL_DEVICE_NOT_FOUND",		"Couldn't find an OpenCL device matching the given type"],
+			["CL_OUT_OF_RESOURCES",		""],
+			["CL_OUT_OF_HOST_MEMORY",	""]
 		));
 		
 		// get device IDs

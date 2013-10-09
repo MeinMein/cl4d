@@ -228,7 +228,16 @@ mixin(mixinExceptionClasses(
 		ECD("CL_IMAGE_FORMAT_MISMATCH",		"",	"CLBufferException"),
 		ECD("CL_IMAGE_FORMAT_NOT_SUPPORTED","", "CLBufferException"),
 		ECD("CL_INVALID_MIP_LEVEL",			"", "CLBufferException"),
-		ECD("CL_INVALID_GL_OBJECT",			"", "CLBufferException")
+		ECD("CL_INVALID_GL_OBJECT",			"", "CLBufferException"),
+
+		//ECD("CL_INVALID_IMAGE_FORMAT",		"", "CLCommandQueueException"),// doesn't exist in headers
+
+		// KHR extension errors
+		ECD("CL_INVALID_D3D10_DEVICE_KHR",				"",	"CLContextException"),
+		ECD("CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR",	"",	"CLContextException"),
+		ECD("CL_INVALID_DX9_MEDIA_ADAPTER_KHR",			"",	"CLContextException"),
+		//ECD("CL_INVALID_ADAPTER_KHR",					"",	"CLContextException"),// doesn't exist in headers
+		ECD("CL_INVALID_D3D11_DEVICE_KHR",				"",	"CLContextException")
 ));
 
 } // of version(!NO_CL_EXCEPTIONS)

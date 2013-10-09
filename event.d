@@ -81,6 +81,7 @@ public:
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_VALUE",		""],
+			["CL_INVALID_CONTEXT",		"the events in this list do not belong to the same context"],
 			["CL_INVALID_EVENT",		""],
 			["CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST",	"execution status of the event is a negative integer value"],
 			["CL_OUT_OF_RESOURCES",		""],
