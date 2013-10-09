@@ -109,7 +109,8 @@ package:
 			mixin("cl_errcode res = clRetain" ~ toCamelCase(Tname[2..$]) ~ (Tname == "cl_mem" ? "Object" : "") ~ "(_object);");
 			mixin(exceptionHandling(
 				["CL_OUT_OF_RESOURCES",		""],
-				["CL_OUT_OF_HOST_MEMORY",	""]
+				["CL_OUT_OF_HOST_MEMORY",	""],
+				["CL_INVALID" ~ toUpperCase(Tname[2..$] ~ (Tname == "cl_mem" ? "_Object" : "")), ""],
 			));
 
 			debug writef("copied %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount);
@@ -135,7 +136,8 @@ package:
 			mixin("cl_errcode res = clRelease" ~ toCamelCase(Tname[2..$]) ~ (Tname == "cl_mem" ? "Object" : "") ~ "(_object);");
 			mixin(exceptionHandling(
 				["CL_OUT_OF_RESOURCES",		""],
-				["CL_OUT_OF_HOST_MEMORY",	""]
+				["CL_OUT_OF_HOST_MEMORY",	""],
+				["CL_INVALID" ~ toUpperCase(Tname[2..$] ~ (Tname == "cl_mem" ? "_Object" : "")), ""],
 			));
 		}
 	}
