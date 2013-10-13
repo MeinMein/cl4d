@@ -24,6 +24,12 @@ struct CLPlatform
 	mixin(CLWrapper("cl_platform_id", "clGetPlatformInfo"));
 
 public:
+	/// get the platform handle
+	T handle()
+	{
+		 return _object;
+	}
+
 	/// get the platform name
 	string name()
 	{
