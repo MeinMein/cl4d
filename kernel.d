@@ -134,8 +134,8 @@ public:
 			auto tmp = arg.cptr;
 			setArgx(idx, arg.cptr.sizeof, &tmp);
 		}
-		else static if (is(ArgType : CLObject))
-			static assert(0, "can't set " ~ ArgType.stringof ~ " as a kernel argument!");
+		//else static if (is(ArgType : CLObject)) // FIXME ..CLObject does not exist
+		//	static assert(0, "can't set " ~ ArgType.stringof ~ " as a kernel argument!");
 		else static if (is(ArgType == LocalArgSize))
 			setArgx(idx, arg.size, null); // it's a __local parameter, so just set its size
 		else static if (is(ArgType U : U*))
