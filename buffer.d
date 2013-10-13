@@ -181,3 +181,43 @@ struct CLBufferRenderGL
 		));
 	}
 }
+
+//! Memory buffer interface for GL interop with textures
+struct CLBufferTextureGL
+{
+	CLBuffer sup;
+	alias sup this;
+
+	/**
+	 *	creates an OpenCL buffer object from an OpenGL texture
+	 *
+	 *	Params:
+	 *		context			=	a valid OpenCL context created from an OpenGL context
+	 *		flags			=	only CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY and CL_MEM_READ_WRITE can be used
+	 *		texture_target	= 	This value must be one of GL_TEXTURE_1D, GL_TEXTURE_1D_ARRAY, GL_TEXTURE_BUFFER,
+	 *							GL_TEXTURE_2D, GL_TEXTURE_2D_ARRAY, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+	 * 							GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+	 * 							GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, or GL_TEXTURE_RECTANGLE.
+	 *							This requires OpenGL 3.1. Alternatively, GL_TEXTURE_RECTANGLE_ARB may be specified if the
+	 *							OpenGL extension GL_ARB_texture_rectangle is supported.
+	 *		miplevel 		=	The mipmap level to be used.
+	 *		texture			=	The name of a GL 1D, 2D, 3D, 1D array, 2D array, cubemap, rectangle or buffer texture object.
+	 *							The texture object must be a complete texture as per OpenGL rules on texture completeness.
+	 */
+	this(CLContext context, cl_mem_flags flags, cl_GLenum texture_target, cl_GLint miplevel, cl_GLuint texture)
+	{
+		cl_errcode res;
+		sup = CLBuffer(clCreateFromGLTexture(context.cptr, flags, texture_target, miplevel, texture, &res));
+		
+		mixin(exceptionHandling(
+			["CL_INVALID_CONTEXT",					"context is not a valid context or was not created from a GL context"],
+			["CL_INVALID_VALUE",					"invalid flags"],
+			["CL_INVALID_MIP_LEVEL",				""],
+			["CL_INVALID_GL_OBJECT",				"the OpenGL texture object type does not match texture_type, or the width/height of the specified miplevel is zero"],
+			["CL_INVALID_IMAGE_FORMAT_DESCRIPTOR",	"the OpenGL texture internal format does not map to a supported OpenCL image format"],
+			["CL_INVALID_OPERATION",				"the OpenGL texture has a border width greater than zero"],
+			["CL_OUT_OF_RESOURCES",					""],
+			["CL_OUT_OF_HOST_MEMORY",				""]
+		));
+	}
+}
