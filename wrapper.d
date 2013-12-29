@@ -45,7 +45,7 @@ public string CLWrapper(string T, string classInfoFunction)
 	"enum Tname = \"" ~ T ~ "\";\n" ~
 	"alias " ~ T ~ " T;\n" ~ q{
 
-	package T _object = null;
+	package T _object;
 	//public alias _object this; // TODO any merit?
 	package alias T CType; // remember the C type
 
