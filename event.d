@@ -17,15 +17,6 @@ import cl4d.error;
 import cl4d.program;
 import cl4d.wrapper;
 
-// Used in this module as convenience shortcut
-enum cl_command_execution_status
-{
-	CL_COMPLETE = CL_COMPLETE,
-	CL_RUNNING = CL_RUNNING,
-	CL_SUBMITTED = CL_SUBMITTED,
-	CL_QUEUED = CL_QUEUED,
-}
-
 //! Event collection
 struct CLEvents
 {
@@ -104,7 +95,7 @@ public:
 	 */
 
 	alias extern(System) void function(cl_event,  cl_int,  void*) evt_notify_fn; // could be added to wrappertypes
-	void setCallback(cl_command_execution_status command_exec_callback_type, evt_notify_fn pfn_notify, void* userData = null)
+	void setCallback(cl_int command_exec_callback_type, evt_notify_fn pfn_notify, void* userData = null)
 	{
 		if(DerelictCL.loadedVersion < CLVersion.CL11)
 			throw new CLVersionException();
@@ -147,7 +138,7 @@ public:
 		//! negative values are errors, probably of type cl_errcode
 		auto status()
 		{
-			auto res = getInfo!cl_command_execution_status(CL_EVENT_COMMAND_EXECUTION_STATUS);
+			auto res = getInfo!cl_int(CL_EVENT_COMMAND_EXECUTION_STATUS);
 
 			// TODO: should this throw an exception?
 
@@ -277,7 +268,7 @@ struct CLUserEvent
 	 *
 	 *	clSetUserEventStatus can only be called once to change the execution status of event
 	 */
-	@property void status(cl_command_execution_status executionStatus)
+	@property void status(cl_int executionStatus)
 	{
 		cl_errcode res = clSetUserEventStatus(this._object, executionStatus);
 		
