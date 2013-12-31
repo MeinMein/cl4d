@@ -1,13 +1,14 @@
-/**
- *	cl4d - object-oriented wrapper for the OpenCL C API
- *	written in the D programming language
- *
- *	Copyright:
- *		(C) 2009-2011 Andreas Hollandt
- *
- *	License:
- *		see LICENSE.txt
- */
+// cl4d - a D wrapper for the Derelict OpenCL binding
+// written in the D programming language
+//
+// Copyright: Andreas Hollandt 2009 - 2011,
+//            MeinMein 2013-2014.
+// License:   Boost License 1.0
+//            (See accompanying file LICENSE_1_0.txt or copy at
+//             http://www.boost.org/LICENSE_1_0.txt)
+// Authors:   Andreas Hollandt,
+//            Gerbrand Kamphuis (meinmein.com).
+
 module cl4d.device;
 
 import derelict.opencl.cl;

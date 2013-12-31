@@ -1,0 +1,15 @@
+{
+    "name": "cl4d",
+    "description": "A D wrapper for the Derelict OpenCL binding",
+    "homepage": "https://github.com/MeinMein/cl4d",
+	"copyright": "Andreas Hollandt 2009 - 2011, MeinMein 2013 - 2014.",
+	"license": "BSL-1.0",
+    "authors": [
+		"Andreas Hollandt"
+        "Gerbrand Kamphuis (meinmein.com)",
+    ],
+
+    "dependencies": {
+        "derelict_extras-opencl": ">=1.2.0"
+    }
+}
