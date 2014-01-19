@@ -49,6 +49,33 @@ public:
 		));
 	}
 	
+	/**
+	 * Same as above, but accepts multiple source strings.
+	*/
+	this(CLContext context, string[] sourceCode)
+	{
+		cl_errcode res;
+		
+		size_t[] lengths;
+		lengths.length = sourceCode.length;
+		foreach(i, source; sourceCode)
+			lengths[i] = source.length;
+		
+		char*[] ptrs;
+		ptrs.length = sourceCode.length;
+		foreach(i, source; sourceCode)
+			ptrs[i] = cast(char*)(source.ptr);
+		
+		this(clCreateProgramWithSource(context.cptr, sourceCode.length, ptrs.ptr, lengths.ptr, &res));
+
+		mixin(exceptionHandling(
+			["CL_INVALID_CONTEXT",		""],
+			["CL_INVALID_VALUE",		"source code string pointer is invalid"],
+			["CL_OUT_OF_RESOURCES",		""],
+			["CL_OUT_OF_HOST_MEMORY",	""]
+		));
+	}
+	
 	/* TODO
 	 * creates a program object for a context, and loads the binary bits specified by binary into the program object
 	 *
