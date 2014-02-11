@@ -10,6 +10,6 @@
     ],
 
     "dependencies": {
-        "derelict_extras-opencl": ">=1.2.0"
+        "derelict_extras-opencl": "~master"
     }
 }
