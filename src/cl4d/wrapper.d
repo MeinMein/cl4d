@@ -56,7 +56,12 @@ public:
 	this(T obj)
 	{
 		_object = obj;
-		debug writef("wrapped %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount);
+
+		// NOTE: cl_platform_id and cl_device_id aren't reference counted
+		static if (Tname[$-3..$] != "_id")
+		{
+			debug writef("wrapped %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount);
+		}
 	}
 
 debug private import std.stdio;
@@ -130,6 +135,7 @@ package:
 				clReleaseDevice(_object);
 		}
 
+		// NOTE: cl_platform_id and cl_device_id aren't reference counted
 		static if (Tname[$-3..$] != "_id")
 		{
 			debug writef("released %s %X. Reference count is: %d\n", Tname, cast(void*) _object, referenceCount-1);
@@ -341,17 +347,15 @@ package struct CLObjectCollection(T)
 	alias _objects this;
 
 	//! takes a list of cl4d CLObjects
-	this(T[] objects...)
+	// Do not use variadic, messes everything up.
+	this(T[] objects)
 	in
 	{
 		assert(objects !is null);
 	}
 	body
 	{
-		// From http://dlang.org/function.html Variadic Functions:
-		// An implementation may construct the object or array instance on the stack.
-		// Therefore, it is an error to refer to that instance after the variadic function has returned.
-		// So, .dup is needed.
+		// copy objects
 		_objects = objects.dup;
 	}
 
