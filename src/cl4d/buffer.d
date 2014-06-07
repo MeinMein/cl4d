@@ -208,7 +208,8 @@ struct CLBufferTextureGL
 	this(CLContext context, cl_mem_flags flags, cl_GLenum texture_target, cl_GLint miplevel, cl_GLuint texture)
 	{
 		cl_errcode res;
-		sup = CLBuffer(clCreateFromGLTexture(context.cptr, flags, texture_target, miplevel, texture, &res));
+		cl_mem mem = clCreateFromGLTexture(context.cptr, flags, texture_target, miplevel, texture, &res);
+		sup = CLBuffer(mem);
 		
 		mixin(exceptionHandling(
 			["CL_INVALID_CONTEXT",					"context is not a valid context or was not created from a GL context"],
